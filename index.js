@@ -5,6 +5,7 @@ const {chromium} = require('playwright');
 
 const {importSession} = require('./sessionImport');
 const cleanupSession = require('./sessionCleanup');
+const {captureAndUpload} = require('./screenshot');
 
 const newSession = require('./scenarios/newSession.js');
 const createOrder = require('./scenarios/createOrder.js');
@@ -111,6 +112,7 @@ function startServer() {
                 const args = scenario.args.map(k => req.body[k] ?? null);
                 await scenario.func(page, ...args);
 
+                await captureAndUpload(page, req.body.session_id);
                 await page.close();
             } catch (err) {
                 console.error(`Ошибка при обработке запроса ${req.path}:`, err);

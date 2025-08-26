@@ -1,6 +1,7 @@
 .vscode
 .idea
 node_modules
+screenshots
 sessions
 .env
 *tar.gz
