@@ -1,23 +1,22 @@
+const {log} = require('../utils/log');
 const clickToOpenPaymentMethodsPopup = require('../steps/clickToOpenPaymentMethodsPopup');
 const clickToAddQrCode = require('../steps/clickToAddQrCode');
 const waitingForQrSbp = require('../steps/waitingForQrSbp');
 const confirmAddedSbp = require('../steps/confirmAddedSbp');
 
 async function addSbp(page)  {
+    // Пауза
     await page.waitForTimeout(5000);
 
-    // Открытие окна способов оплаты
+    await log("Открытие окна способов оплаты");
     const isPaymentMethodsPopupClicked = await clickToOpenPaymentMethodsPopup(page);
     if(!isPaymentMethodsPopupClicked) return false;
 
-    // Пауза
-    await page.waitForTimeout(2000);
-
-    // Нажатие на кнопку привязки СБП
+    await log("Нажатие на кнопку привязки СБП");
     const isAddQrCodeClicked = await clickToAddQrCode(page);
     if(!isAddQrCodeClicked) return false;
 
-    // Ожидание привязки СБП
+    await log("Ожидание привязки СБП");
     const isSbpAdded = await waitingForQrSbp(page);
     if(!isSbpAdded) return false;
 

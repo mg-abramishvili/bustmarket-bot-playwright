@@ -1,4 +1,6 @@
 async function selectPvzFromList(page, pvzAddress) {
+    await page.waitForTimeout(2000);
+
     try {
         // Ждем открытия попапа
         const popup = page.locator('.popup');

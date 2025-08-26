@@ -1,5 +1,5 @@
 async function confirmAddedSbp(page) {
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000);
 
     const selector = '.popup-lk-payment .btn-main';
     const button = page.locator(selector).first();

@@ -1,3 +1,4 @@
+const {log} = require("../utils/log");
 const getPaymentMethods = require('../requests/getPaymentMethods');
 const openPaymentModal = require('../steps/openPaymentModal');
 const selectPaymentMethodFromList = require('../steps/selectPaymentMethodFromList');
@@ -5,28 +6,26 @@ const goToProfilePage = require('../steps/goToProfilePage');
 const goToCart = require('../steps/goToCart');
 
 async function makePayment(page) {
+    await log("Отправка запроса на получение способов оплаты");
     const paymentMethods = await getPaymentMethods(page);
     if(!paymentMethods) return false;
 
+    await log("Получение названия способа оплаты");
     const paymentMethodName = paymentMethods[0]?.name;
     if(!paymentMethodName) return false;
 
     await page.waitForTimeout(5000);
 
+    await log("Выбор способа оплаты СБП");
     const payTextSelector = '.basket-pay__methods';
     const payElement = page.locator(payTextSelector);
     const isVisible = await payElement.isVisible().catch(() => false);
 
     // Если элемент существует, проверяем его содержимое
     if (isVisible) {
-        console.log(payTextSelector + ' here');
         const payText = await payElement.innerText().catch(() => '');
 
-        console.log(payText);
-        console.log(paymentMethodName);
-
         if (payText?.includes(paymentMethodName)) {
-            console.log('Payment method already selected');
             return true;
         }
     }

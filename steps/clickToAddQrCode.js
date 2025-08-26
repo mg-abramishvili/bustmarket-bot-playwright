@@ -1,5 +1,5 @@
 async function clickToAddQrCode(page) {
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000);
 
     const text = 'Привязать счёт СБП';
     const container = '.popup';

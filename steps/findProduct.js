@@ -5,11 +5,11 @@ const checkForSizes = require('../steps/checkForSizes');
 const goToCart = require('../steps/goToCart');
 
 async function findProduct(page, artnumber, keyword) {
-    await log('Вводим ключевое слово или артикул в поиск');
+    await log('Ввод ключевого слова или артикул в поиск');
     const isSearchInputEntered = await enterSearchInput(page, artnumber, keyword);
     if (!isSearchInputEntered) return false;
 
-    await log('Добавим товар в корзину');
+    await log('Добавление товара в корзину');
     const isAddToCartClicked = await addToCart(page);
     if (!isAddToCartClicked) return false;
 
