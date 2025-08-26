@@ -8,7 +8,7 @@ async function svgStringToPngBase64(svgString) {
             .toBuffer();
         return 'data:image/png;base64,' + pngBuffer.toString('base64');
     } catch (err) {
-        throw err;
+        return null;
     }
 }
 

@@ -16,7 +16,9 @@ async function waitingForQrSbp(page, orderId) {
         const qrPngBase64 = await svgStringToPngBase64(qrSvg);
 
         // Отправка QR на сервер
-        await sendOrderDataToServer(orderId, 'qr_image', qrPngBase64);
+        if(qrPngBase64) {
+            await sendOrderDataToServer(orderId, 'qr_image', qrPngBase64);
+        }
 
         // Ждём исчезновения QR-кода (успешная привязка)
         const timeout = 230  * 1000; // 3 мин 50 сек
