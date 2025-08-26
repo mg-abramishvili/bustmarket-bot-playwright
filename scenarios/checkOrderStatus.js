@@ -6,6 +6,10 @@ const goToDeliveries = require("../steps/goToDeliveries");
 async function checkOrderStatus(page, sessionId, orderId, artnumber) {
     const log = createLogger(orderId);
 
+    const finish = async () => {
+        await sendOrderDataToServer(orderId, 'order_status', status);
+    };
+
     const status = {
         status_text: '',
         receive_code: '',
@@ -15,11 +19,11 @@ async function checkOrderStatus(page, sessionId, orderId, artnumber) {
     try {
         await log('Проверка на авторизацию');
         const isLoggedIn = await checkForAuth(page);
-        if (!isLoggedIn) return await cancelOrderStatusCheck();
+        if (!isLoggedIn) return await finish();
 
         await log('Переход в доставки');
         const isDeliveriesOpened = await goToDeliveries(page);
-        if (!isDeliveriesOpened) return await cancelOrderStatusCheck();
+        if (!isDeliveriesOpened) return await finish();
 
         await log('Проверка наличия заказа');
         const orderBlockSelector = page.locator('.delivery-block--delivery').first();
@@ -31,11 +35,11 @@ async function checkOrderStatus(page, sessionId, orderId, artnumber) {
             await log('Проверка артикула по URL фото');
             const productPhotoImgSelector = '.product__photo img';
             const productPhotoElement = await page.$(productPhotoImgSelector);
-            if (!productPhotoElement) return await cancelOrderStatusCheck();
+            if (!productPhotoElement) return await finish();
 
             const productPhotoSrc = await productPhotoElement.getAttribute('src');
             if (!productPhotoSrc || !productPhotoSrc.includes(artnumber)) {
-                return await cancelOrderStatusCheck();
+                return await finish();
             }
 
             await log('Проверка статуса');
@@ -46,7 +50,7 @@ async function checkOrderStatus(page, sessionId, orderId, artnumber) {
                 const orderStatusText = await orderStatusSelector.textContent();
 
                 if (!orderStatusText?.trim()) {
-                    return await cancelOrderStatusCheck();
+                    return await finish();
                 }
 
                 await log(`Статус заказа - ${orderStatusText.trim()}`);
@@ -63,11 +67,11 @@ async function checkOrderStatus(page, sessionId, orderId, artnumber) {
                     status.receive_code = deliveryCode?.trim() || '';
                 } catch (error) {
                     await log('Код получения не найден');
-                    return await cancelOrderStatusCheck();
+                    return await finish();
                 }
             } catch (error) {
                 await log('Статус заказа не найден');
-                return await cancelOrderStatusCheck();
+                return await finish();
             }
         } catch (error) {
             // Если блока нет, считаем что товар получен
@@ -78,22 +82,11 @@ async function checkOrderStatus(page, sessionId, orderId, artnumber) {
         // Пауза
         await page.waitForTimeout(2000);
 
-        // Отправим данные на сервер
-        await sendOrderDataToServer(orderId, 'order_status', status);
-
         // Завершим работу
         await finish();
     } catch (error) {
-        return await cancelOrderStatusCheck();
+        return await finish();
     }
-}
-
-async function cancelOrderStatusCheck() {
-    //
-}
-
-async function finish() {
-    //
 }
 
 module.exports = checkOrderStatus;
