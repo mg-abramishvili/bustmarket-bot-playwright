@@ -1,3 +1,5 @@
+const {log} = require('../utils/log');
+
 async function sendOrderDataToServer(order_id, field, value) {
     const url = `${process.env.API_SERVER}/api/orders/${order_id}/worker-update`;
 
@@ -10,12 +12,19 @@ async function sendOrderDataToServer(order_id, field, value) {
             body: JSON.stringify({[field]: value})
         });
 
+        await log(`HTTP статус ответа: ${response.status}`);
+        await log(`HTTP статус текст: ${response.statusText}`);
+
         if (!response.ok) {
+            const errorText = await response.text();
+            await log(`Ошибка сервера: ${errorText}`);
             return false;
         }
 
         return true;
     } catch (error) {
+        await log(`Критическая ошибка отправки: ${error.message}`);
+        await log(`Stack trace: ${error.stack}`);
         return false;
     }
 }
