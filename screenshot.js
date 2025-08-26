@@ -14,7 +14,7 @@ async function captureAndUpload(page, sessionId) {
     const screenshotPath = path.join(screenshotsDir, `session_${sessionId}.jpg`);
 
     // Делаем скриншот и сохраняем как jpeg
-    await page.screenshot({path: screenshotPath, type: 'jpeg', quality: 80, fullPage: true});
+    await page.screenshot({path: screenshotPath, type: 'jpeg', quality: 80, fullPage: false});
 
     // Загружаем в S3
     const bucketName = process.env.S3_BUCKET || "00809bfe-bustmarket-sessions-screenshots";
