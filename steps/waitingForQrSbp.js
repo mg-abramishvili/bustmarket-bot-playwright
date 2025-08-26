@@ -12,8 +12,8 @@ async function waitingForQrSbp(page, orderId) {
         // await sendOrderDataToServer(orderId, 'qr_image', qrSvg);
 
         // Ждём исчезновения QR-кода (успешная привязка)
-        const timeoutInMinutes = 5;
-        await sbpQr.waitFor({state: 'detached', timeout: timeoutInMinutes * 60 * 1000});
+        const timeout = 290  * 1000; // 3 мин 50 сек
+        await sbpQr.waitFor({state: 'detached', timeout: timeout});
 
         // После исчезновения попапа
         await page.waitForTimeout(3000);
