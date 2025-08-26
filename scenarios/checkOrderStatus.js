@@ -1,4 +1,5 @@
-const {log} = require("../utils/log");
+const {log, setOrderId} = require("../utils/log");
+const {sendOrderDataToServer} = require("../utils/sendToServer");
 const checkForAuth = require("../steps/checkForAuth");
 const goToDeliveries = require("../steps/goToDeliveries");
 
@@ -10,6 +11,9 @@ async function checkOrderStatus(page, sessionId, orderId, artnumber) {
     };
 
     try {
+        // Установим ID заказа
+        await setOrderId(orderId);
+
         await log('Проверка на авторизацию');
         const isLoggedIn = await checkForAuth(page);
         if (!isLoggedIn) return await cancelOrderStatusCheck();
@@ -75,25 +79,22 @@ async function checkOrderStatus(page, sessionId, orderId, artnumber) {
         // Пауза
         await page.waitForTimeout(2000);
 
-        // Отправим данные на сервер (предполагается, что функция существует)
-        // await sendOrderDataToServer(orderId, 'order_status', status);
+        // Отправим данные на сервер
+        await sendOrderDataToServer(orderId, 'order_status', status);
 
         // Завершим работу
-        await finish(true);
-        return status;
-
+        await finish();
     } catch (error) {
-        await log(`Ошибка при проверке статуса заказа: ${error.message}`);
         return await cancelOrderStatusCheck();
     }
 }
 
 async function cancelOrderStatusCheck() {
-    await log('Отмена проверки статуса заказа');
+    //
 }
 
-async function finish(success = false) {
-    await log(`Завершение работы. Успешно: ${success}`);
+async function finish() {
+    //
 }
 
 module.exports = checkOrderStatus;

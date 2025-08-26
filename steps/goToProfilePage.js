@@ -4,7 +4,7 @@ async function goToProfilePage(page) {
 
     try {
         await button.waitFor({state: "visible"});
-        await button.click();
+        await button.click({force: true});
 
         return true;
     } catch (err) {

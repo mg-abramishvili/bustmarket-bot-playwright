@@ -1,4 +1,5 @@
-const {log} = require("../utils/log");
+const {log, setOrderId} = require("../utils/log");
+const {sendOrderDataToServer} = require("../utils/sendToServer");
 const checkForAuth = require("../steps/checkForAuth");
 const deletePaymentMethods = require("../steps/deletePaymentMethods");
 const choosePvz = require("../steps/choosePvz");
@@ -8,7 +9,13 @@ const checkCart = require("../steps/checkCart");
 const makePayment = require("../steps/makePayment");
 const confirmOrder = require("../steps/confirmOrder");
 
+let currentOrderId = null;
+
 async function createOrder(page, sessionId, orderId, artnumber, keyword, price, quantity, pvzId, pvzAddress) {
+    // Установим ID заказа
+    await setOrderId(orderId);
+    currentOrderId = orderId;
+
     await log('Заказ - Проверка на авторизацию');
     const isLoggedIn = await checkForAuth(page);
     if (!isLoggedIn) return await cancelOrder();
@@ -20,6 +27,8 @@ async function createOrder(page, sessionId, orderId, artnumber, keyword, price, 
     await log('Заказ - Добавление СБП');
     const isSbpAdded = await addSbp(page);
     if (!isSbpAdded) return await cancelOrder();
+
+    await sendOrderDataToServer(orderId, 'is_paid', true);
 
     await log('Заказ - Выбор ПВЗ');
     const isPvzSelected = await choosePvz(page, pvzId, pvzAddress);
@@ -44,6 +53,8 @@ async function createOrder(page, sessionId, orderId, artnumber, keyword, price, 
     // Большая пауза
     await page.waitForTimeout(20000);
 
+    await finish();
+
     // Отвяжем способ оплаты
     await deletePaymentMethods(page);
 
@@ -51,11 +62,11 @@ async function createOrder(page, sessionId, orderId, artnumber, keyword, price, 
 }
 
 async function cancelOrder() {
-
+    await sendOrderDataToServer(currentOrderId, 'is_cancelled', true);
 }
 
 async function finish() {
-
+    await sendOrderDataToServer(currentOrderId, 'is_created', true);
 }
 
 module.exports = createOrder;
