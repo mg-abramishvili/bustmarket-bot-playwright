@@ -6,14 +6,14 @@ const goToDeliveries = require("../steps/goToDeliveries");
 async function checkOrderStatus(page, sessionId, orderId, artnumber) {
     const log = createLogger(orderId);
 
-    const finish = async () => {
-        await sendOrderDataToServer(orderId, 'order_status', status);
-    };
-
     const status = {
         status_text: '',
         receive_code: '',
         is_received: false
+    };
+
+    const finish = async () => {
+        await sendOrderDataToServer(orderId, 'order_status', status);
     };
 
     try {
