@@ -13,7 +13,7 @@ async function waitingForQrSbp(page, orderId) {
 
         await log('Конвертация QR SVG в PNG base64')
         const qrSvg = await sbpQr.evaluate(el => el.outerHTML);
-        const qrPngBase64 = await svgStringToPngBase64(qrSvg);
+        const qrPngBase64 = await svgStringToPngBase64(page, qrSvg);
 
         // Отправка QR на сервер
         if(qrPngBase64) {
