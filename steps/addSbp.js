@@ -4,7 +4,7 @@ const clickToAddQrCode = require('../steps/clickToAddQrCode');
 const waitingForQrSbp = require('../steps/waitingForQrSbp');
 const confirmAddedSbp = require('../steps/confirmAddedSbp');
 
-async function addSbp(page)  {
+async function addSbp(page, orderId)  {
     // Пауза
     await page.waitForTimeout(5000);
 
@@ -17,7 +17,7 @@ async function addSbp(page)  {
     if(!isAddQrCodeClicked) return false;
 
     await log("Ожидание привязки СБП");
-    const isSbpAdded = await waitingForQrSbp(page);
+    const isSbpAdded = await waitingForQrSbp(page, orderId);
     if(!isSbpAdded) return false;
 
     const isSbpConfirmed = await confirmAddedSbp(page);

@@ -25,7 +25,7 @@ async function createOrder(page, sessionId, orderId, artnumber, keyword, price, 
     if(!isOldPaymentMethodsDeleted) return await cancelOrder();
 
     await log('Заказ - Добавление СБП');
-    const isSbpAdded = await addSbp(page);
+    const isSbpAdded = await addSbp(page, orderId);
     if (!isSbpAdded) return await cancelOrder();
 
     await sendOrderDataToServer(orderId, 'is_paid', true);

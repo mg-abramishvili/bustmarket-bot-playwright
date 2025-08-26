@@ -1,31 +1,21 @@
-const {log} = require('../utils/log');
-const axios = require('axios');
-
 async function sendOrderDataToServer(order_id, field, value) {
     const url = `${process.env.API_SERVER}/api/orders/${order_id}/worker-update`;
 
     try {
-        await log('Начинаем HTTP запрос через axios...');
-
-        const response = await axios({
+        const response = await fetch(url, {
             method: 'PUT',
-            url: url,
             headers: {
                 'Content-Type': 'application/json',
             },
-            data: {[field]: value},
-            timeout: 30000 // 30 секунд таймаут
+            body: JSON.stringify({[field]: value})
         });
 
-        await log(`Ответ получен: ${response.status}`);
-        return response.status >= 200 && response.status < 300;
-
-    } catch (error) {
-        await log(`Ошибка axios: ${error.message}`);
-        if (error.response) {
-            await log(`Статус ошибки: ${error.response.status}`);
-            await log(`Данные ошибки: ${JSON.stringify(error.response.data)}`);
+        if (!response.ok) {
+            return false;
         }
+
+        return true;
+    } catch (error) {
         return false;
     }
 }
