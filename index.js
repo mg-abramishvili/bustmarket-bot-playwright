@@ -111,9 +111,19 @@ function startServer() {
                 await page.goto(MP_CONFIG[req.body.mp].url, {waitUntil: 'domcontentloaded'});
 
                 const args = scenario.args.map(k => req.body[k] ?? null);
-                await scenario.func(page, ...args);
 
-                await captureAndUpload(page, req.body.session_id);
+                try {
+                    await scenario.func(page, ...args);
+                } catch (err) {
+                    console.error(`Ошибка при выполнении сценария ${req.path}:`, err);
+                }
+
+                try {
+                    await captureAndUpload(page, req.body.session_id);
+                } catch (screenshotErr) {
+                    console.error('Не удалось сделать скриншот:', screenshotErr);
+                }
+
                 await page.close();
             } catch (err) {
                 console.error(`Ошибка при обработке запроса ${req.path}:`, err);
