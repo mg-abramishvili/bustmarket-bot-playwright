@@ -1,25 +1,18 @@
 const {sendOrderWorkerLogToServer} = require('./sendToServer');
 
-let currentOrderId = null;
-
-function setOrderId(orderId) {
-    currentOrderId = orderId;
-}
-
-async function log(message) {
-    console.log(message);
-
-    if(currentOrderId) {
-        try {
-            await sendOrderWorkerLogToServer(currentOrderId, message);
-        } catch (error) {
-            console.error(`Не удалось отправить лог на сервер: ${error.message}`);
+function createLogger(orderId = null) {
+    return async function log(message) {
+        if (orderId) {
+            console.log(`[${orderId}] ${message}`);
+            try {
+                await sendOrderWorkerLogToServer(orderId, message);
+            } catch (error) {
+                console.error(`Не удалось отправить лог на сервер: ${error.message}`);
+            }
+        } else {
+            console.log(message); // просто консольный вывод без отправки на сервер
         }
-    }
-
-    return new Promise(resolve => {
-        resolve();
-    });
+    };
 }
 
-module.exports = {log, setOrderId};
+module.exports = { createLogger };

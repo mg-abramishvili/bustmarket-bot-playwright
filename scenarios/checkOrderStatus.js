@@ -1,9 +1,11 @@
-const {log, setOrderId} = require("../utils/log");
+const {createLogger} = require("../utils/log");
 const {sendOrderDataToServer} = require("../utils/sendToServer");
 const checkForAuth = require("../steps/checkForAuth");
 const goToDeliveries = require("../steps/goToDeliveries");
 
 async function checkOrderStatus(page, sessionId, orderId, artnumber) {
+    const log = createLogger(orderId);
+
     const status = {
         status_text: '',
         receive_code: '',
@@ -11,9 +13,6 @@ async function checkOrderStatus(page, sessionId, orderId, artnumber) {
     };
 
     try {
-        // Установим ID заказа
-        await setOrderId(orderId);
-
         await log('Проверка на авторизацию');
         const isLoggedIn = await checkForAuth(page);
         if (!isLoggedIn) return await cancelOrderStatusCheck();

@@ -1,11 +1,13 @@
-const {log} = require("../utils/log");
+const {createLogger} = require("../utils/log");
 const getPaymentMethods = require('../requests/getPaymentMethods');
 const openPaymentModal = require('../steps/openPaymentModal');
 const selectPaymentMethodFromList = require('../steps/selectPaymentMethodFromList');
 const goToProfilePage = require('../steps/goToProfilePage');
 const goToCart = require('../steps/goToCart');
 
-async function makePayment(page) {
+async function makePayment(page, orderId) {
+    const log = createLogger(orderId);
+
     await log("Отправка запроса на получение способов оплаты");
     const paymentMethods = await getPaymentMethods(page);
     if(!paymentMethods) return false;

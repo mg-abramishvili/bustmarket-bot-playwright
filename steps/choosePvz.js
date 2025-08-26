@@ -1,9 +1,11 @@
-const {log} = require('../utils/log');
+const {createLogger} = require('../utils/log');
 const choosePvzRequest = require('../requests/choosePvzRequest');
 const chooseAddressButton = require('../steps/chooseAddressButton');
 const selectPvzFromList = require('../steps/selectPvzFromList');
 
-async function choosePvz(page, pvzId, pvzAddress)  {
+async function choosePvz(page, orderId, pvzId, pvzAddress)  {
+    const log = createLogger(orderId);
+
     await log('Отправка запроса на добавление ПВЗ в профиль');
     const isPvzAddedToProfile = await choosePvzRequest(page, pvzId);
     if(!isPvzAddedToProfile) return false;

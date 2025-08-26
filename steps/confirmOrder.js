@@ -1,10 +1,12 @@
-const {log} = require('../utils/log');
+const {createLogger} = require('../utils/log');
 const clickOnOrderButton = require('../steps/clickOnOrderButton');
 const selectPayNowTab = require('../steps/selectPayNowTab');
 const checkForOrderConfirmedMessage = require('../steps/checkForOrderConfirmedMessage');
 const confirmOrderFinal = require('../steps/confirmOrderFinal');
 
-async function confirmOrder(page) {
+async function confirmOrder(page, orderId) {
+    const log = createLogger(orderId);
+
     // Пауза
     await page.waitForTimeout(3000);
 

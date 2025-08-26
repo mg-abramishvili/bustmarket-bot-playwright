@@ -1,10 +1,12 @@
-const {log} = require('../utils/log');
+const {createLogger} = require('../utils/log');
 const clickToOpenPaymentMethodsPopup = require('../steps/clickToOpenPaymentMethodsPopup');
 const clickToAddQrCode = require('../steps/clickToAddQrCode');
 const waitingForQrSbp = require('../steps/waitingForQrSbp');
 const confirmAddedSbp = require('../steps/confirmAddedSbp');
 
 async function addSbp(page, orderId)  {
+    const log = createLogger(orderId);
+
     // Пауза
     await page.waitForTimeout(5000);
 

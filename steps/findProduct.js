@@ -1,10 +1,12 @@
-const {log} = require('../utils/log');
+const {createLogger} = require('../utils/log');
 const enterSearchInput = require('../steps/enterSearchInput');
 const addToCart = require('../steps/addToCart');
 const checkForSizes = require('../steps/checkForSizes');
 const goToCart = require('../steps/goToCart');
 
-async function findProduct(page, artnumber, keyword) {
+async function findProduct(page, orderId, artnumber, keyword) {
+    const log = createLogger(orderId);
+
     await log('Ввод ключевого слова или артикул в поиск');
     const isSearchInputEntered = await enterSearchInput(page, artnumber, keyword);
     if (!isSearchInputEntered) return false;

@@ -1,4 +1,4 @@
-const {log, setOrderId} = require("../utils/log");
+const {createLogger} = require("../utils/log");
 const {sendOrderDataToServer} = require("../utils/sendToServer");
 const checkForAuth = require("../steps/checkForAuth");
 const deletePaymentMethods = require("../steps/deletePaymentMethods");
@@ -9,12 +9,18 @@ const checkCart = require("../steps/checkCart");
 const makePayment = require("../steps/makePayment");
 const confirmOrder = require("../steps/confirmOrder");
 
-let currentOrderId = null;
-
 async function createOrder(page, sessionId, orderId, artnumber, keyword, price, quantity, pvzId, pvzAddress) {
-    // Установим ID заказа
-    await setOrderId(orderId);
-    currentOrderId = orderId;
+    const log = createLogger(orderId);
+
+    const cancelOrder = async () => {
+        await log("Заказ отменён");
+        await sendOrderDataToServer(orderId, 'is_cancelled', true);
+    };
+
+    const finish = async () => {
+        await log("Заказ успешно создан");
+        await sendOrderDataToServer(orderId, 'is_created', true);
+    };
 
     await log('Заказ - Проверка на авторизацию');
     const isLoggedIn = await checkForAuth(page);
@@ -30,24 +36,24 @@ async function createOrder(page, sessionId, orderId, artnumber, keyword, price, 
 
     await sendOrderDataToServer(orderId, 'is_paid', true);
 
-    await log('Заказ - Выбор ПВЗ');
-    const isPvzSelected = await choosePvz(page, pvzId, pvzAddress);
+    await log('Заказ - Выбор ПВЗ')
+    const isPvzSelected = await choosePvz(page, orderId, pvzId, pvzAddress);
     if (!isPvzSelected) return await cancelOrder();
 
     await log('Заказ - Поиск товара, в корзину');
-    const isProductFoundAndInCart = await findProduct(page, artnumber, keyword);
+    const isProductFoundAndInCart = await findProduct(page, orderId, artnumber, keyword);
     if (!isProductFoundAndInCart) return await cancelOrder();
 
     await log('Заказ - Проверка корзины');
-    const isCartChecked = await checkCart(page, artnumber, quantity);
+    const isCartChecked = await checkCart(page, orderId, artnumber, quantity);
     if (!isCartChecked) return await cancelOrder();
 
     await log('Заказ - Оплата');
-    const isPaymentCompleted = await makePayment(page);
+    const isPaymentCompleted = await makePayment(page, orderId);
     if (!isPaymentCompleted) return await cancelOrder();
 
     await log('Заказ - Подтверждение заказа');
-    const isOrderConfirmed = await confirmOrder(page);
+    const isOrderConfirmed = await confirmOrder(page, orderId);
     if (!isOrderConfirmed) return await cancelOrder();
 
     // Большая пауза
@@ -59,14 +65,6 @@ async function createOrder(page, sessionId, orderId, artnumber, keyword, price, 
     await deletePaymentMethods(page);
 
     await page.waitForTimeout(1000);
-}
-
-async function cancelOrder() {
-    await sendOrderDataToServer(currentOrderId, 'is_cancelled', true);
-}
-
-async function finish() {
-    await sendOrderDataToServer(currentOrderId, 'is_created', true);
 }
 
 module.exports = createOrder;

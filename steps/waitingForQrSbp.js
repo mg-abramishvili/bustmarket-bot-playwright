@@ -1,8 +1,10 @@
-const {log} = require('../utils/log');
+const {createLogger} = require('../utils/log');
 const {svgStringToPngBase64} = require('../utils/svg');
 const {sendOrderDataToServer} = require('../utils/sendToServer');
 
 async function waitingForQrSbp(page, orderId) {
+    const log = createLogger(orderId);
+
     try {
         // Ждём появления QR
         const sbpQr = page.locator('.popup-qrc__value svg').first();

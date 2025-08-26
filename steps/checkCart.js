@@ -1,6 +1,8 @@
-const {log} = require('../utils/log');
+const {createLogger} = require('../utils/log');
 
-async function checkCart(page, artnumber, quantity) {
+async function checkCart(page, orderId, artnumber, quantity) {
+    const log = createLogger(orderId);
+
     await page.waitForTimeout(3000);
 
     const basketItemsSelector = '.basket-list .j-b-basket-item';
