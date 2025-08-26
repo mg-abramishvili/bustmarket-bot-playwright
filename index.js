@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const {chromium} = require('playwright');
+require('dotenv').config();
 
 const {importSession} = require('./sessionImport');
 const cleanupSession = require('./sessionCleanup');
