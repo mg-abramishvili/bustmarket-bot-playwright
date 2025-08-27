@@ -37,15 +37,31 @@ async function createOrder(page, sessionId, orderId, artnumber, keyword, price, 
     if (!isSbpAdded) return await cancelOrder();
 
     await log("Отправка запроса на получение способов оплаты");
-    const paymentMethods = await getPaymentMethods(page);
-    if (!paymentMethods) return await cancelOrder();
-    console.log(paymentMethods);
+    // const paymentMethods = await getPaymentMethods(page);
+    // if (!paymentMethods) return await cancelOrder();
+    // console.log(paymentMethods);
+
+    let paymentMethods;
+    for (let i = 1; i <= 3; i++) {
+        paymentMethods = await getPaymentMethods(page);
+        if (paymentMethods?.length) break;
+
+        if (i < 3) await page.waitForTimeout(3000 * i);
+    }
+
+    if (!paymentMethods?.length) {
+        await log("Не удалось получить способы оплаты после 3 попыток");
+        await cancelOrder();
+    }
 
     await log("Получение названия способа оплаты");
     const paymentMethodName = paymentMethods[0]?.name;
     if(!paymentMethodName) return false;
 
     await sendOrderDataToServer(orderId, 'is_paid', true);
+
+    // Большая пауза
+    await page.waitForTimeout(45000);
 
     await log('Заказ - Выбор ПВЗ')
     const isPvzSelected = await choosePvz(page, orderId, pvzId, pvzAddress);
