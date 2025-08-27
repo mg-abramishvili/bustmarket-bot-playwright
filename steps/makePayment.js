@@ -7,6 +7,9 @@ const goToCart = require('../steps/goToCart');
 async function makePayment(page, orderId, paymentMethodName) {
     const log = createLogger(orderId);
 
+    // Для теста переопределим название метода оплаты на баланс
+    paymentMethodName = "Баланс: 0 ₽";
+
     // Проверяем, есть ли уже метод оплаты на странице
     if (await isPaymentMethodPresent(page, paymentMethodName)) {
         await log(`Способ оплаты ${paymentMethodName} присутствует на странице`);
