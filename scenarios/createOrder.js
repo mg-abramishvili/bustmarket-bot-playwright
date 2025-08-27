@@ -8,6 +8,8 @@ const findProduct = require("../steps/findProduct");
 const checkCart = require("../steps/checkCart");
 const makePayment = require("../steps/makePayment");
 const confirmOrder = require("../steps/confirmOrder");
+const goToCart = require("../steps/goToCart");
+const getPaymentMethods = require("../requests/getPaymentMethods");
 
 async function createOrder(page, sessionId, orderId, artnumber, keyword, price, quantity, pvzId, pvzAddress) {
     const log = createLogger(orderId);
@@ -34,22 +36,35 @@ async function createOrder(page, sessionId, orderId, artnumber, keyword, price, 
     const isSbpAdded = await addSbp(page, orderId);
     if (!isSbpAdded) return await cancelOrder();
 
+    await log("Отправка запроса на получение способов оплаты");
+    const paymentMethods = await getPaymentMethods(page);
+    if (!paymentMethods) return await cancelOrder();
+    console.log(paymentMethods);
+
+    await log("Получение названия способа оплаты");
+    const paymentMethodName = paymentMethods[0]?.name;
+    if(!paymentMethodName) return false;
+
     await sendOrderDataToServer(orderId, 'is_paid', true);
 
     await log('Заказ - Выбор ПВЗ')
     const isPvzSelected = await choosePvz(page, orderId, pvzId, pvzAddress);
     if (!isPvzSelected) return await cancelOrder();
 
-    await log('Заказ - Поиск товара, в корзину');
+    await log('Заказ - Поиск товара');
     const isProductFoundAndInCart = await findProduct(page, orderId, artnumber, keyword);
     if (!isProductFoundAndInCart) return await cancelOrder();
+
+    await log('Переход в корзину');
+    const isGoToCartClicked = await goToCart(page);
+    if (!isGoToCartClicked) return false;
 
     await log('Заказ - Проверка корзины');
     const isCartChecked = await checkCart(page, orderId, artnumber, quantity);
     if (!isCartChecked) return await cancelOrder();
 
     await log('Заказ - Оплата');
-    const isPaymentCompleted = await makePayment(page, orderId);
+    const isPaymentCompleted = await makePayment(page, orderId, paymentMethodName);
     if (!isPaymentCompleted) return await cancelOrder();
 
     await log('Заказ - Подтверждение заказа');
