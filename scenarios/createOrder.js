@@ -59,9 +59,9 @@ async function createOrder(page, sessionId, orderId, artnumber, keyword, price, 
     const isCartChecked = await checkCart(page, orderId, artnumber, quantity);
     if (!isCartChecked) return await cancelOrder();
 
-    // Попытки оплаты и подтверждения заказа (до 3 раз)
+    // Попытки оплаты и подтверждения заказа
     let isPaymentAndConfirmCompleted = false;
-    for (let attempt = 1; attempt <= 3; attempt++) {
+    for (let attempt = 1; attempt <= 10; attempt++) {
         console.log(`Попытка ${attempt} оплаты и подтверждения заказа`);
 
         isPaymentAndConfirmCompleted = await tryPaymentAndConfirm(page, log, orderId, pvzId, paymentMethodName);
