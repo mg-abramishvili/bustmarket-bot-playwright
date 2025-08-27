@@ -1,6 +1,4 @@
 async function clickOnOrderButton(page) {
-    await page.waitForTimeout(2000);
-
     const selector = '.j-btn-confirm-order';
     const button = page.locator(selector).first();
 

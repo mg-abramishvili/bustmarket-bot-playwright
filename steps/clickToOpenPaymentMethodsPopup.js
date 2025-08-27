@@ -1,7 +1,7 @@
 async function clickToOpenPaymentMethodsPopup(page) {
     // Наведение на дропдаун "Профиль" чтобы подгрузилось меню
     const lkLinkSelector = '[data-wba-header-name="LK"]';
-    const lkLink = page.locator(lkLinkSelector);
+    const lkLink = page.locator(lkLinkSelector).first();
 
     try {
         await lkLink.waitFor({state: 'visible'});

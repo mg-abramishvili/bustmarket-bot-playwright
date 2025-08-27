@@ -1,9 +1,9 @@
-const getPaymentMethods = require('../requests/getPaymentMethods');
+const getPaymentMethodsRequest = require('../requests/getPaymentMethodsRequest');
 const deletePaymentMethod = require('../requests/deletePaymentMethod');
 
 async function deletePaymentMethods(page)  {
     // Открытие окна способов оплаты
-    const paymentMethods = await getPaymentMethods(page);
+    const paymentMethods = await getPaymentMethodsRequest(page);
 
     if(paymentMethods && paymentMethods.length) {
         for (const paymentMethod of paymentMethods) {
@@ -14,7 +14,7 @@ async function deletePaymentMethods(page)  {
     // Проверка, что список очистился
     let attempts = 3;
     while (attempts > 0) {
-        const remaining = await getPaymentMethods(page);
+        const remaining = await getPaymentMethodsRequest(page);
 
         if (!remaining || remaining.length === 0) {
             return true; // Всё удалено

@@ -7,7 +7,7 @@ function createLogger(orderId = null) {
             try {
                 await sendOrderWorkerLogToServer(orderId, message);
             } catch (error) {
-                console.error(`Не удалось отправить лог на сервер: ${error.message}`);
+                // console.error(`Не удалось отправить лог на сервер: ${error.message}`);
             }
         } else {
             console.log(message); // просто консольный вывод без отправки на сервер

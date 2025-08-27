@@ -22,8 +22,11 @@ async function addSbp(page, orderId)  {
     const isSbpAdded = await waitingForQrSbp(page, orderId);
     if(!isSbpAdded) return false;
 
+    await log("Закрытие окна СБП");
     const isSbpConfirmed = await confirmAddedSbp(page);
     if(!isSbpConfirmed) return false;
+
+    await log("СБП привязан");
 
     return true;
 }

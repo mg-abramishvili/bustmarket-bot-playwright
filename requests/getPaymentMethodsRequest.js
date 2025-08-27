@@ -1,4 +1,4 @@
-async function getPaymentMethods(page) {
+async function getPaymentMethodsRequest(page) {
     return await page.evaluate(async () => {
         const tokenData = JSON.parse(localStorage.getItem("wbx__tokenData") || "{}");
         const bearerToken = tokenData.token || "";
@@ -22,4 +22,4 @@ async function getPaymentMethods(page) {
     });
 }
 
-module.exports = getPaymentMethods;
+module.exports = getPaymentMethodsRequest;

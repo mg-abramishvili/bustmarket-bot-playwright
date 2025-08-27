@@ -5,8 +5,10 @@ async function clickToAddQrCode(page) {
     const container = '.popup';
 
     try {
-        const popup = page.locator(container);
+        const popup = page.locator(container).first();
         await popup.waitFor({state: 'visible'});
+
+        await page.waitForTimeout(2000);
 
         const button = popup.locator(`text=${text}`);
         await button.waitFor({state: 'visible'});

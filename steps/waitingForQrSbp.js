@@ -7,17 +7,15 @@ async function waitingForQrSbp(page, orderId) {
 
     try {
         // Ждём появления QR
-        const sbpQr = page.locator('.popup-qrc__value svg').first();
+        const sbpQr = page.locator('.popup-lk-payment svg').first();
         await sbpQr.waitFor({state: 'visible'});
-        await page.waitForTimeout(1000);
 
         await log('Конвертация QR SVG в PNG base64')
         const qrPngBase64 = await svgStringToPngBase64(page);
 
         // Отправка QR на сервер
-        if(qrPngBase64) {
-            await sendOrderDataToServer(orderId, 'qr_image', qrPngBase64);
-        }
+        if(qrPngBase64) await sendOrderDataToServer(orderId, 'qr_image', qrPngBase64);
+        await log("QR отправлен на сервер");
 
         // Ждём исчезновения QR-кода (успешная привязка)
         const timeout = 230  * 1000; // 3 мин 50 сек
