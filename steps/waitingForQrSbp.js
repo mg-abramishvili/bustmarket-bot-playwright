@@ -5,13 +5,16 @@ const {sendOrderDataToServer} = require('../utils/sendToServer');
 async function waitingForQrSbp(page, orderId) {
     const log = createLogger(orderId);
 
+    await page.waitForTimeout(2000);
+
     try {
         // Ждём появления QR
-        const sbpQr = page.locator('.popup-lk-payment svg').first();
+        const svgSelector = '.popup-lk-payment svg';
+        const sbpQr = page.locator(svgSelector).first();
         await sbpQr.waitFor({state: 'visible'});
 
         await log('Конвертация QR SVG в PNG base64')
-        const qrPngBase64 = await svgStringToPngBase64(page);
+        const qrPngBase64 = await svgStringToPngBase64(page, svgSelector);
 
         // Отправка QR на сервер
         if(qrPngBase64) await sendOrderDataToServer(orderId, 'qr_image', qrPngBase64);

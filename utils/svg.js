@@ -1,14 +1,14 @@
-async function svgStringToPngBase64(page, svgString) {
+async function svgStringToPngBase64(page, svgSelector) {
     try {
         // Передаем SVG напрямую в evaluate
-        const pngBase64 = await page.evaluate(() => {
+        const pngBase64 = await page.evaluate((svgSelector) => {
             return new Promise((resolve, reject) => {
                 // Создаем canvas
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
 
                 // Получаем SVG элемент из DOM
-                const svgElement = document.querySelector('.popup-qrc__value svg');
+                const svgElement = document.querySelector(svgSelector);
                 if (!svgElement) {
                     reject('SVG not found');
                     return;
@@ -35,7 +35,7 @@ async function svgStringToPngBase64(page, svgString) {
                 const svg64 = btoa(unescape(encodeURIComponent(svgString)));
                 img.src = 'data:image/svg+xml;base64,' + svg64;
             });
-        });
+        }, svgSelector);
 
         return pngBase64;
     } catch (err) {
