@@ -108,7 +108,7 @@ async function restartPage(page, log) {
             return false;
         }
 
-        await page.waitForTimeout(3000); // пауза для стабильности
+        await page.waitForTimeout(10000); // пауза для стабильности
         await log("Страница успешно перезагружена, готовы к новой попытке оплаты");
         return true;
     } catch (err) {
