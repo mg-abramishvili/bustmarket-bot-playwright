@@ -2,7 +2,7 @@ async function clickOnRequestCodeButton(page) {
     await page.waitForTimeout(1000);
 
     const selector = '#spaAuthForm #requestCode';
-    const button = page.locator(selector);
+    const button = page.locator(selector).first();
 
     try {
         await button.waitFor({state: "visible"});

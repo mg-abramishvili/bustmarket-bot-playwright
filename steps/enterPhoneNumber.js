@@ -6,7 +6,11 @@ async function enterPhoneNumber(page, phoneNumber) {
     try {
         await loginPhoneInput.waitFor({state: 'visible'});
 
-        await loginPhoneInput.fill('');
+        await loginPhoneInput.evaluate(el => {
+            el.value = "";
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+
         await loginPhoneInput.focus();
 
         await page.waitForTimeout(1000);

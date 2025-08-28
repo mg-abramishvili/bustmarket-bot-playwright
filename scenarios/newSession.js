@@ -2,7 +2,7 @@ const {createLogger} = require("../utils/log");
 const {sendSessionDataToServer} = require('../utils/sendToServer');
 const {getPhoneNumber} = require('../requests/moreSmsRequest');
 const getRandomName = require('../utils/names');
-const checkForGuest = require('../steps/checkForGuest');
+const openLoginForm = require('../steps/openLoginForm');
 const enterPhoneNumber = require('../steps/enterPhoneNumber');
 const clickOnRequestCodeButton = require('../steps/clickOnRequestCodeButton');
 const changeProfileName = require('../steps/changeProfileName');
@@ -24,29 +24,27 @@ async function newSession(page, sessionId) {
         await sendSessionDataToServer(sessionId, 'account', account);
     };
 
-    await log('Проверка на отсутствие аккаунта');
-    const isGuest = await checkForGuest(page);
-    if (!isGuest) return await cancel();
+    await log('Открытие формы входа');
+    const isLoginFormOpened = await openLoginForm(page);
+    if (!isLoginFormOpened) return await cancel();
 
-    // await log('Запрос номера у SIM-сервиса')
-    // const phoneNumberResponse = await getPhoneNumber();
-    // if (!phoneNumberResponse) {
-    //     await log('Не получен номер от SIM-сервиса');
-    //     return await cancel();
-    // }
-    //
-    // // Запишем данные - номер телефона и айдишник услуги
-    // const phoneNumber = phoneNumberResponse.tel;
-    // const idNum = phoneNumberResponse.idNum;
-    //
-    // if (!phoneNumber || !idNum) {
-    //     await log('Ошибка получения номера от SIM-сервиса');
-    //     return await cancel();
-    // }
-    //
-    // await log(`Получен номер: ${phoneNumber} (idNum ${idNum})`);
+    await log('Запрос номера у SIM-сервиса')
+    const phoneNumberResponse = await getPhoneNumber();
+    if (!phoneNumberResponse) {
+        await log('Не получен номер от SIM-сервиса');
+        return await cancel();
+    }
 
-    const phoneNumber = "79373455377";
+    // Запишем данные - номер телефона и айдишник услуги
+    const phoneNumber = phoneNumberResponse.tel;
+    const idNum = phoneNumberResponse.idNum;
+
+    if (!phoneNumber || !idNum) {
+        await log('Ошибка получения номера от SIM-сервиса');
+        return await cancel();
+    }
+
+    await log(`Получен номер: ${phoneNumber} (idNum ${idNum})`);
 
     await log('Ввод номера телефона')
     const isPhoneNumberEntered = await enterPhoneNumber(page, phoneNumber);
@@ -60,7 +58,7 @@ async function newSession(page, sessionId) {
     await new Promise(r => setTimeout(r, 5000));
 
     await log('Проверка упоминания приложения')
-    const isCodeSentToApp = await checkForAppCode(phoneNumber);
+    const isCodeSentToApp = await checkForAppCode(page);
 
     // Если получаем сообщение, что код отправлен в приложение вместо SMS, то ждем
     // И делаем повторную попытку запроса кода по SMS
