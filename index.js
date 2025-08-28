@@ -5,6 +5,7 @@ const {chromium} = require('playwright');
 require('dotenv').config();
 
 const {importSession} = require('./sessionImport');
+const {exportSession} = require('./sessionExport');
 const cleanupSession = require('./sessionCleanup');
 const {captureAndUpload} = require('./screenshot');
 
@@ -31,24 +32,28 @@ function startServer() {
             args: ['session_id', 'order_id', 'artnumber', 'keyword', 'price', 'quantity', 'pvz_id', 'pvz_address'],
             requiredArgs: ['session_id', 'order_id', 'artnumber', 'price', 'quantity', 'pvz_id', 'pvz_address'],
             sessionImportRequired: true,
+            sessionExportRequired: false,
         },
         '/order-status': {
             func: checkOrderStatus,
             args: ['session_id', 'order_id', 'artnumber'],
             requiredArgs: ['session_id', 'order_id', 'artnumber'],
             sessionImportRequired: true,
+            sessionExportRequired: false,
         },
         '/order-review': {
             func: createReview,
             args: ['session_id', 'order_id', 'artnumber', 'review_text'],
             requiredArgs: ['session_id', 'order_id', 'artnumber', 'review_text'],
             sessionImportRequired: true,
+            sessionExportRequired: false,
         },
         '/sessions': {
             func: newSession,
             args: ['session_id'],
             requiredArgs: ['session_id'],
             sessionImportRequired: false,
+            sessionExportRequired: true,
         }
     };
 
@@ -125,6 +130,8 @@ function startServer() {
                 }
 
                 await page.close();
+
+                if(scenario.sessionExportRequired) await exportSession(req.body.session_id);
             } catch (err) {
                 console.error(`Ошибка при обработке запроса ${req.path}:`, err);
             } finally {
