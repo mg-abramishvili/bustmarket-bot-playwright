@@ -13,6 +13,7 @@ const newSession = require('./scenarios/newSession.js');
 const createOrder = require('./scenarios/createOrder.js');
 const checkOrderStatus = require('./scenarios/checkOrderStatus.js');
 const createReview = require('./scenarios/createReview.js');
+const {sendSessionDataToServer} = require("./utils/sendToServer");
 
 function startServer() {
     const app = express();
@@ -135,6 +136,10 @@ function startServer() {
 
                 if (scenario.sessionExportRequired && result === true) {
                     await exportSession(req.body.session_id);
+                }
+
+                if (scenario.sessionExportRequired && result === false) {
+                    await sendSessionDataToServer(req.body.session_id, 'status', 'cancelled');
                 }
             } catch (err) {
                 console.error(`Ошибка при обработке запроса ${req.path}:`, err);
