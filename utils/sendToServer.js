@@ -59,12 +59,12 @@ async function sendSessionDataToServer(session_id, field, value) {
         });
 
         if (!response.ok) {
-            throw new Error(`Error: ${response.status}`);
+            return false;
         }
 
-        return await response.json();
+        return true;
     } catch (error) {
-        throw error;
+        return false;
     }
 }
 

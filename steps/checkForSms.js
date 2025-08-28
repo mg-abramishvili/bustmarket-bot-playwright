@@ -15,7 +15,7 @@ async function checkForSms(page, idNum) {
 
         console.log(`Попытка ${attempt} неудачна. Повторный запрос SMS-кода.`);
 
-        const isAnotherRetryCodeButtonClicked = await clickOnRequestCodeButton();
+        const isAnotherRetryCodeButtonClicked = await clickOnRequestCodeButton(page);
         if (!isAnotherRetryCodeButtonClicked) return null;
 
         await new Promise(r => setTimeout(r, 3000));

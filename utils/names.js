@@ -37,7 +37,7 @@ async function getRandomName() {
     // Возвращаем имя и пол
     return {
         name: name,
-        gender: isMale ? 'male' : 'female'
+        gender: isMale ? 'Male' : 'Female'
     };
 }
 

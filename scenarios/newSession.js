@@ -1,14 +1,15 @@
 const {createLogger} = require("../utils/log");
 const {sendSessionDataToServer} = require('../utils/sendToServer');
 const {getPhoneNumber} = require('../requests/moreSmsRequest');
-const getRandomName = require('../utils/names');
 const openLoginForm = require('../steps/openLoginForm');
 const enterPhoneNumber = require('../steps/enterPhoneNumber');
 const clickOnRequestCodeButton = require('../steps/clickOnRequestCodeButton');
-const changeProfileName = require('../steps/changeProfileName');
 const checkForAppCode = require("../steps/checkForAppCode");
 const checkForSms = require("../steps/checkForSms");
 const enterSms = require("../steps/enterSms");
+const getRandomName = require('../utils/names');
+const changeProfileNameRequest = require('../requests/changeProfileNameRequest');
+const changeProfileGenderRequest = require('../requests/changeProfileGenderRequest');
 
 async function newSession(page, sessionId) {
     const log = createLogger(null);
@@ -83,8 +84,11 @@ async function newSession(page, sessionId) {
     const person = await getRandomName();
     if (!person) return await cancel();
 
-    const isProfileNameChanged = await changeProfileName(page, person);
+    const isProfileNameChanged = await changeProfileNameRequest(page, person.name);
     if (!isProfileNameChanged) return await cancel();
+
+    const isProfileGenderChanged = await changeProfileGenderRequest(page, person.gender);
+    if (!isProfileGenderChanged) return await cancel();
 
     // Пауза
     await new Promise(r => setTimeout(r, 1000));
