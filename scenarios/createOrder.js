@@ -10,7 +10,6 @@ const makePayment = require("../steps/makePayment");
 const confirmOrder = require("../steps/confirmOrder");
 const goToCart = require("../steps/goToCart");
 const getCurrentPaymentMethod = require("../steps/getCurrentPaymentMethod");
-const goToProfilePage = require("../steps/goToProfilePage");
 
 async function createOrder(page, sessionId, orderId, artnumber, keyword, price, quantity, pvzId, pvzAddress) {
     const log = createLogger(orderId);

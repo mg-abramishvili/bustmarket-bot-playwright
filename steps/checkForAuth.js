@@ -1,9 +1,9 @@
 async function checkForAuth(page) {
-    const loginButtonSelector = '[data-wba-header-name="LK"]';
+    const lkButtonSelector = '[data-wba-header-name="LK"]';
 
     try {
-        const loginButton = page.locator(loginButtonSelector).first();
-        await loginButton.waitFor({state: 'visible'});
+        const lkButton = page.locator(lkButtonSelector).first();
+        await lkButton.waitFor({state: 'visible'});
         return true;
     } catch (err) {
         return false;

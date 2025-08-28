@@ -1,0 +1,102 @@
+const {createLogger} = require("../utils/log");
+const {sendSessionDataToServer} = require('../utils/sendToServer');
+const {getPhoneNumber} = require('../requests/moreSmsRequest');
+const getRandomName = require('../utils/names');
+const checkForGuest = require('../steps/checkForGuest');
+const enterPhoneNumber = require('../steps/enterPhoneNumber');
+const clickOnRequestCodeButton = require('../steps/clickOnRequestCodeButton');
+const changeProfileName = require('../steps/changeProfileName');
+const checkForAppCode = require("../steps/checkForAppCode");
+const checkForSms = require("../steps/checkForSms");
+const enterSms = require("../steps/enterSms");
+
+async function newSession(page, sessionId) {
+    const log = createLogger(null);
+
+    let account = {phone: null, name: null, gender: null}
+
+    const cancel = async () => {
+        await log("Не удалось создать аккаунт");
+    };
+
+    const finish = async () => {
+        await log("Аккаунт успешно создан");
+        await sendSessionDataToServer(sessionId, 'account', account);
+    };
+
+    await log('Проверка на отсутствие аккаунта');
+    const isGuest = await checkForGuest(page);
+    if (!isGuest) return await cancel();
+
+    // await log('Запрос номера у SIM-сервиса')
+    // const phoneNumberResponse = await getPhoneNumber();
+    // if (!phoneNumberResponse) {
+    //     await log('Не получен номер от SIM-сервиса');
+    //     return await cancel();
+    // }
+    //
+    // // Запишем данные - номер телефона и айдишник услуги
+    // const phoneNumber = phoneNumberResponse.tel;
+    // const idNum = phoneNumberResponse.idNum;
+    //
+    // if (!phoneNumber || !idNum) {
+    //     await log('Ошибка получения номера от SIM-сервиса');
+    //     return await cancel();
+    // }
+    //
+    // await log(`Получен номер: ${phoneNumber} (idNum ${idNum})`);
+
+    const phoneNumber = "79373455377";
+
+    await log('Ввод номера телефона')
+    const isPhoneNumberEntered = await enterPhoneNumber(page, phoneNumber);
+    if (!isPhoneNumberEntered) return await cancel();
+
+    await log('Нажатие кнопки Запросить код')
+    const isRequestCodeButtonClicked = await clickOnRequestCodeButton(page);
+    if (!isRequestCodeButtonClicked) return await cancel();
+
+    // Пауза
+    await new Promise(r => setTimeout(r, 5000));
+
+    await log('Проверка упоминания приложения')
+    const isCodeSentToApp = await checkForAppCode(phoneNumber);
+
+    // Если получаем сообщение, что код отправлен в приложение вместо SMS, то ждем
+    // И делаем повторную попытку запроса кода по SMS
+    if (isCodeSentToApp) {
+        await log('Код отправлен в приложение - запрос кода по SMS через 60 сек')
+        await new Promise(r => setTimeout(r, 65000));
+
+        await log('Запрос SMS-кода');
+        const isRetryCodeButtonClicked = await clickOnRequestCodeButton(page);
+        if (!isRetryCodeButtonClicked) return await cancel();
+    }
+
+    await log('Ожидание SMS кода');
+    const receivedSms = await checkForSms(page, idNum);
+    if (!receivedSms) return await cancel();
+
+    await log('Ввод SMS-кода')
+    const isSmsEntered = await enterSms(page, receivedSms);
+    if (!isSmsEntered) return await cancel();
+
+    await log('Изменение имени аккаунта')
+    const person = await getRandomName();
+    if (!person) return await cancel();
+
+    const isProfileNameChanged = await changeProfileName(page, person);
+    if (!isProfileNameChanged) return await cancel();
+
+    // Пауза
+    await new Promise(r => setTimeout(r, 1000));
+
+    account.phone = phoneNumber;
+    account.name = person.name;
+    account.gender = person.gender;
+
+    // Завершим работу
+    await finish(true);
+}
+
+module.exports = newSession;
