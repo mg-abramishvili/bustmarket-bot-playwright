@@ -18,7 +18,7 @@ async function checkForSms(page, idNum) {
         const isAnotherRetryCodeButtonClicked = await clickOnRequestCodeButton(page);
         if (!isAnotherRetryCodeButtonClicked) return null;
 
-        await new Promise(r => setTimeout(r, 3000));
+        await page.waitForTimeout(3000);
     }
 
     if (!smsCode) {

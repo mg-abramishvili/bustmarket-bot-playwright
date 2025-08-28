@@ -56,7 +56,7 @@ async function newSession(page, sessionId) {
     if (!isRequestCodeButtonClicked) return await cancel();
 
     // Пауза
-    await new Promise(r => setTimeout(r, 5000));
+    await page.waitForTimeout(5000);
 
     await log('Проверка упоминания приложения')
     const isCodeSentToApp = await checkForAppCode(page);
@@ -65,7 +65,7 @@ async function newSession(page, sessionId) {
     // И делаем повторную попытку запроса кода по SMS
     if (isCodeSentToApp) {
         await log('Код отправлен в приложение - запрос кода по SMS через 60 сек')
-        await new Promise(r => setTimeout(r, 65000));
+        await page.waitForTimeout(65000);
 
         await log('Запрос SMS-кода');
         const isRetryCodeButtonClicked = await clickOnRequestCodeButton(page);

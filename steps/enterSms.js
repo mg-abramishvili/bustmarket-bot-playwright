@@ -6,7 +6,7 @@ async function enterSms(page, sms) {
         await input.focus();
 
         // Пауза
-        await new Promise(r => setTimeout(r, 1000));
+        await page.waitForTimeout(1000);
 
         for (const char of sms) {
             await page.keyboard.type(char, {delay: 600});
