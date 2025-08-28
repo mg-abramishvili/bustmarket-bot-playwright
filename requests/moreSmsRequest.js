@@ -42,8 +42,8 @@ async function waitForSms(idNum, timeout = 60000) {
     return null;
 }
 
-async function setStatus(idNum, status) {
-    const url = `https://moresms.net/api/setStatus/?apiKey=${apiKey}&idNum=${idNum}&status=${status}`;
+async function cancelPhoneNumber(idNum) {
+    const url = `https://moresms.net/api/setStatus/?apiKey=${apiKey}&idNum=${idNum}&status=end`;
     try {
         const response = await fetch(url);
         return await response.json();
@@ -52,4 +52,4 @@ async function setStatus(idNum, status) {
     }
 }
 
-module.exports = {getPhoneNumber, waitForSms, setStatus};
+module.exports = {getPhoneNumber, waitForSms, cancelPhoneNumber};

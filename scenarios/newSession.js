@@ -1,6 +1,6 @@
 const {createLogger} = require("../utils/log");
 const {sendSessionDataToServer} = require('../utils/sendToServer');
-const {getPhoneNumber, setStatus} = require('../requests/moreSmsRequest');
+const {getPhoneNumber, cancelPhoneNumber} = require('../requests/moreSmsRequest');
 const openLoginForm = require('../steps/openLoginForm');
 const enterPhoneNumber = require('../steps/enterPhoneNumber');
 const clickOnRequestCodeButton = require('../steps/clickOnRequestCodeButton');
@@ -78,7 +78,7 @@ async function newSession(page, sessionId) {
     const receivedSms = await checkForSms(page, idNum);
     if (!receivedSms) {
         // Если не дождались смс, отменим смс номер
-        await setStatus(idNum);
+        await cancelPhoneNumber(idNum);
         return await cancel();
     }
 
