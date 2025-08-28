@@ -18,11 +18,13 @@ async function newSession(page, sessionId) {
 
     const cancel = async () => {
         await log("Не удалось создать аккаунт");
+        return false;
     };
 
     const finish = async () => {
         await log("Аккаунт успешно создан");
         await sendSessionDataToServer(sessionId, 'account', account);
+        return true;
     };
 
     await log('Открытие формы входа');
@@ -101,7 +103,7 @@ async function newSession(page, sessionId) {
     account.gender = person.gender;
 
     // Завершим работу
-    await finish(true);
+    return await finish(true);
 }
 
 module.exports = newSession;

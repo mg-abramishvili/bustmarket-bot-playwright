@@ -117,11 +117,7 @@ function startServer() {
 
                 const args = scenario.args.map(k => req.body[k] ?? null);
 
-                try {
-                    await scenario.func(page, ...args);
-                } catch (err) {
-                    console.error(`Ошибка при выполнении сценария ${req.path}:`, err);
-                }
+                const result = await scenario.func(page, ...args);
 
                 try {
                     await captureAndUpload(page, req.body.session_id);
@@ -131,7 +127,9 @@ function startServer() {
 
                 await page.close();
 
-                if(scenario.sessionExportRequired) await exportSession(req.body.session_id);
+                if (scenario.sessionExportRequired && result === true) {
+                    await exportSession(req.body.session_id);
+                }
             } catch (err) {
                 console.error(`Ошибка при обработке запроса ${req.path}:`, err);
             } finally {
