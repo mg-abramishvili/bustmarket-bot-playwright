@@ -103,7 +103,7 @@ async function newSession(page, sessionId) {
     account.gender = person.gender;
 
     // Завершим работу
-    return await finish(true);
+    return await finish();
 }
 
 module.exports = newSession;
