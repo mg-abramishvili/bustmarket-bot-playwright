@@ -80,18 +80,22 @@ async function newSession(page, sessionId) {
     const isSmsEntered = await enterSms(page, receivedSms);
     if (!isSmsEntered) return await cancel();
 
+    // Пауза
+    await page.waitForTimeout(10000);
+
     await log('Изменение имени аккаунта')
     const person = await getRandomName();
     if (!person) return await cancel();
 
     const isProfileNameChanged = await changeProfileNameRequest(page, person.name);
+    await page.waitForTimeout(1000000);
     if (!isProfileNameChanged) return await cancel();
 
     const isProfileGenderChanged = await changeProfileGenderRequest(page, person.gender);
     if (!isProfileGenderChanged) return await cancel();
 
     // Пауза
-    await new Promise(r => setTimeout(r, 1000));
+    await page.waitForTimeout(2000);
 
     account.phone = phoneNumber;
     account.name = person.name;

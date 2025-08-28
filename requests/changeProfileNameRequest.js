@@ -6,7 +6,7 @@ async function changeProfileNameRequest(page, name) {
 
         const url = "https://www.wildberries.ru/webapi/personalinfo/fio";
         const res = await fetch(url, {
-            method: "POST",
+            method: "PATCH",
             headers: {
                 "Authorization": `Bearer ${bearerToken}`,
                 "Content-Type": "application/json"

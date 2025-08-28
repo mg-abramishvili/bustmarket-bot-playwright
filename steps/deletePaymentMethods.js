@@ -23,7 +23,7 @@ async function deletePaymentMethods(page)  {
         attempts--;
         if (attempts > 0) {
             // Подождать 5 секунд перед новой проверкой
-            await new Promise((resolve) => setTimeout(resolve, 5000));
+            await page.waitForTimeout(5000);
         }
     }
 

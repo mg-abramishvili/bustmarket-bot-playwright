@@ -6,7 +6,7 @@ async function changeProfileGenderRequest(page, gender) {
 
         const url = "https://www.wildberries.ru/webapi/personalinfo/sex";
         const res = await fetch(url, {
-            method: "POST",
+            method: "PATCH",
             headers: {
                 "Authorization": `Bearer ${bearerToken}`,
                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
