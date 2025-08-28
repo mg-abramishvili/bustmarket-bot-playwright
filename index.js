@@ -83,6 +83,12 @@ function startServer() {
     };
 
     const handleRequest = (req, res) => {
+        // Ограничение активных сессий до 10
+        const activeSessionsCount = Object.values(sessions).length;
+        if (activeSessionsCount >= 10) {
+            return res.status(429).json({error: 'Сервер перегружен'});
+        }
+
         const scenario = SCENARIO_MAP[req.path];
         if (!scenario) return res.status(404).json({error: 'Неизвестный путь'});
 
@@ -94,7 +100,7 @@ function startServer() {
             return res.status(400).json({error: 'Не указан mp'});
         }
 
-        if(sessions[req.body.session_id]) {
+        if (sessions[req.body.session_id]) {
             return res.status(400).json({error: 'Сессия занята'});
         }
 
