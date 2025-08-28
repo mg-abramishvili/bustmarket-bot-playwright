@@ -20,7 +20,7 @@ async function getPhoneNumber() {
     }
 }
 
-async function waitForSms(idNum, timeout = 60000) {
+async function waitForSms(idNum, timeout = 90000) {
     const start = Date.now();
     const url = `https://moresms.net/api/getSmsCode/?apiKey=${apiKey}&idNum=${idNum}`;
 
