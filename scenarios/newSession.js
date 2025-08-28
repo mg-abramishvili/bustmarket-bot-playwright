@@ -88,7 +88,6 @@ async function newSession(page, sessionId) {
     if (!person) return await cancel();
 
     const isProfileNameChanged = await changeProfileNameRequest(page, person.name);
-    await page.waitForTimeout(1000000);
     if (!isProfileNameChanged) return await cancel();
 
     const isProfileGenderChanged = await changeProfileGenderRequest(page, person.gender);
