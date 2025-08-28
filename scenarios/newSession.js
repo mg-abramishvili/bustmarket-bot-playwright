@@ -1,6 +1,6 @@
 const {createLogger} = require("../utils/log");
 const {sendSessionDataToServer} = require('../utils/sendToServer');
-const {getPhoneNumber} = require('../requests/moreSmsRequest');
+const {getPhoneNumber, setStatus} = require('../requests/moreSmsRequest');
 const openLoginForm = require('../steps/openLoginForm');
 const enterPhoneNumber = require('../steps/enterPhoneNumber');
 const clickOnRequestCodeButton = require('../steps/clickOnRequestCodeButton');
@@ -76,7 +76,11 @@ async function newSession(page, sessionId) {
 
     await log('Ожидание SMS кода');
     const receivedSms = await checkForSms(page, idNum);
-    if (!receivedSms) return await cancel();
+    if (!receivedSms) {
+        // Если не дождались смс, отменим смс номер
+        await setStatus(idNum);
+        return await cancel();
+    }
 
     await log('Ввод SMS-кода')
     const isSmsEntered = await enterSms(page, receivedSms);
