@@ -30,8 +30,26 @@ function startServer() {
     const SCENARIO_MAP = {
         '/order': {
             func: createOrder,
-            args: ['session_id', 'order_id', 'artnumber', 'keyword', 'price', 'quantity', 'pvz_id', 'pvz_address'],
-            requiredArgs: ['session_id', 'order_id', 'artnumber', 'price', 'quantity', 'pvz_id', 'pvz_address'],
+            args: [
+                'session_id',
+                'order_id',
+                'artnumber',
+                'keyword',
+                'price',
+                'quantity',
+                'pvz_id',
+                'pvz_address',
+                'address',
+                'mode',
+            ],
+            requiredArgs: [
+                'session_id',
+                'order_id',
+                'artnumber',
+                'price',
+                'quantity',
+                'mode',
+            ],
             sessionImportRequired: true,
             sessionExportRequired: false,
         },

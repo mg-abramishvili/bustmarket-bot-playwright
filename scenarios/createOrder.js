@@ -2,7 +2,7 @@ const {createLogger} = require("../utils/log");
 const {sendOrderDataToServer} = require("../utils/sendToServer");
 const checkForAuth = require("../steps/checkForAuth");
 const deletePaymentMethods = require("../steps/deletePaymentMethods");
-const choosePvz = require("../steps/choosePvz");
+const choosePvzOrAddress = require("../steps/choosePvzOrAddress");
 const addSbp = require("../steps/addSbp");
 const findProduct = require("../steps/findProduct");
 const checkCart = require("../steps/checkCart");
@@ -11,7 +11,19 @@ const confirmOrder = require("../steps/confirmOrder");
 const goToCart = require("../steps/goToCart");
 const getCurrentPaymentMethod = require("../steps/getCurrentPaymentMethod");
 
-async function createOrder(page, sessionId, orderId, artnumber, keyword, price, quantity, pvzId, pvzAddress) {
+async function createOrder(
+    page,
+    sessionId,
+    orderId,
+    artnumber,
+    keyword,
+    price,
+    quantity,
+    pvzId,
+    pvzAddress,
+    address,
+    mode
+) {
     const log = createLogger(orderId);
 
     const cancelOrder = async () => {
@@ -32,19 +44,21 @@ async function createOrder(page, sessionId, orderId, artnumber, keyword, price, 
     const isOldPaymentMethodsDeleted = await deletePaymentMethods(page);
     if (!isOldPaymentMethodsDeleted) return await cancelOrder();
 
-    await log('Заказ - Добавление СБП');
-    const isSbpAdded = await addSbp(page, orderId);
-    if (!isSbpAdded) return await cancelOrder();
+    // await log('Заказ - Добавление СБП');
+    // const isSbpAdded = await addSbp(page, orderId);
+    // if (!isSbpAdded) return await cancelOrder();
 
-    await log("Отправка запроса на получение способов оплаты");
-    const paymentMethodName = await getCurrentPaymentMethod(page);
-    if (!paymentMethodName) return await cancelOrder();
+    // await log("Отправка запроса на получение способов оплаты");
+    // const paymentMethodName = await getCurrentPaymentMethod(page);
+    // if (!paymentMethodName) return await cancelOrder();
+    //
+    // await sendOrderDataToServer(orderId, 'is_paid', true);
 
-    await sendOrderDataToServer(orderId, 'is_paid', true);
+    if (mode === 'pvz') await log('Заказ - Выбор ПВЗ')
+    if (mode === 'dbs') await log('Заказы - Выбор адреса доставки');
 
-    await log('Заказ - Выбор ПВЗ')
-    const isPvzSelected = await choosePvz(page, orderId, pvzId, pvzAddress);
-    if (!isPvzSelected) return await cancelOrder();
+    const isPvzOrAddressSelected = await choosePvzOrAddress(page, orderId, pvzId, pvzAddress, address, mode);
+    if (!isPvzOrAddressSelected) return await cancelOrder();
 
     await log('Заказ - Поиск товара');
     const isProductFoundAndInCart = await findProduct(page, orderId, artnumber, keyword);
