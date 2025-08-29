@@ -16,7 +16,7 @@ async function addDeliveryAddressRequest(page, address) {
                 "Authorization": `Bearer ${bearerToken}`,
                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
             },
-            body: `country=Россия&city=${address.city}&street=${address.street}&home=${address.home}&lat=${lat}&lon=${lon}`,
+            body: `country=Россия&city=${address.city}&street=${address.street}&home=${address.home}&lat=${lat}&lon=${lon}&latitude=${lat}&longitude=${lon}&new=true&countryCode=RU&deliveryType=courier`,
         });
 
         if (!res.ok) throw new Error(`Ошибка запроса: ${res.status}`);
