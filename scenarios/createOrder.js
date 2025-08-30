@@ -44,7 +44,6 @@ async function createOrder(
     await log('Проверка на отсутствие долгов');
     const isBalanceOk = await getUserBalance(page);
     if(!isBalanceOk) {
-        await page.waitForTimeout(20000)
         await log('Аккаунт должник');
         return await cancelOrder();
     }
