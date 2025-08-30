@@ -6,6 +6,8 @@ const checkForSizes = require('../steps/checkForSizes');
 async function findProduct(page, orderId, artnumber, keyword) {
     const log = createLogger(orderId);
 
+    await page.waitForTimeout(3000);
+
     await log('Ввод ключевого слова или артикул в поиск');
     const isSearchInputEntered = await enterSearchInput(page, artnumber, keyword);
     if (!isSearchInputEntered) return false;

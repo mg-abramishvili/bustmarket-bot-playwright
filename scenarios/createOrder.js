@@ -44,15 +44,15 @@ async function createOrder(
     const isOldPaymentMethodsDeleted = await deletePaymentMethods(page);
     if (!isOldPaymentMethodsDeleted) return await cancelOrder();
 
-    // await log('Заказ - Добавление СБП');
-    // const isSbpAdded = await addSbp(page, orderId);
-    // if (!isSbpAdded) return await cancelOrder();
+    await log('Заказ - Добавление СБП');
+    const isSbpAdded = await addSbp(page, orderId);
+    if (!isSbpAdded) return await cancelOrder();
 
-    // await log("Отправка запроса на получение способов оплаты");
-    // const paymentMethodName = await getCurrentPaymentMethod(page);
-    // if (!paymentMethodName) return await cancelOrder();
-    //
-    // await sendOrderDataToServer(orderId, 'is_paid', true);
+    await log("Отправка запроса на получение способов оплаты");
+    const paymentMethodName = await getCurrentPaymentMethod(page);
+    if (!paymentMethodName) return await cancelOrder();
+
+    await sendOrderDataToServer(orderId, 'is_paid', true);
 
     if (mode === 'pvz') await log('Заказ - Выбор ПВЗ')
     if (mode === 'dbs') await log('Заказы - Выбор адреса доставки');

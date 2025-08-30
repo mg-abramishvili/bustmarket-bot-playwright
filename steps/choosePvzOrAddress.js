@@ -27,12 +27,14 @@ async function choosePvzOrAddress(page, orderId, pvzId, pvzAddress, address, mod
         if (!isPvzAddedToProfile) return false;
     }
 
+    await page.waitForTimeout(5000);
+
     await log('Открытие окна с выбором адреса');
     const isChooseAddressButtonPressed = await chooseAddressButton(page);
     if (!isChooseAddressButtonPressed) return false;
 
-    await log('Выбор ПВЗ из из списка');
-    const isPvzSelected = await selectPvzFromList(page, pvzAddress);
+    await log('Выбор ПВЗ из списка');
+    const isPvzSelected = await selectPvzFromList(page, pvzAddress, address, mode);
     if (!isPvzSelected) return false;
 
     return true;
