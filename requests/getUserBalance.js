@@ -22,7 +22,10 @@ async function getUserBalance(page,) {
 
         let balance = -1;
 
-        if(data.value?.moneyBalanceRUB) balance = data.value.moneyBalanceRUB;
+        if (data.value?.moneyBalanceRUB) {
+            console.log(data.value.moneyBalanceRUB)
+            balance = data.value.moneyBalanceRUB;
+        }
 
         return balance >= 0;
     });
