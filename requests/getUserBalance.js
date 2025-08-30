@@ -1,16 +1,17 @@
-async function getUserOrders(page) {
+async function getUserBalance(page,) {
     return await page.evaluate(async () => {
         const tokenData = JSON.parse(localStorage.getItem("wbx__tokenData") || "{}");
         const bearerToken = tokenData.token || "";
         if (!bearerToken) throw new Error("Bearer токен не найден");
 
-        const url = "https://wbxoofex.wildberries.ru/api/v2/orders";
+        const url = "https://www.wildberries.ru/webapi/account/getsignedbalance";
         const res = await fetch(url, {
-            method: "GET",
+            method: "POST",
             headers: {
                 "Authorization": `Bearer ${bearerToken}`,
                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
             },
+            body: ``
         });
 
         if (!res.ok) throw new Error(`Ошибка запроса: ${res.status}`);
@@ -19,23 +20,12 @@ async function getUserOrders(page) {
 
         console.log("Ответ:", data);
 
-        let result = [];
+        let balance = -1;
 
-        if (Array.isArray(data.data)) {
-            data.data.forEach(order => {
-                if (Array.isArray(order.rids)) {
-                    order.rids.forEach(item => {
-                        result.push({
-                            nm_id: item?.nm_id ?? null,
-                            uid: item?.uid ?? null
-                        });
-                    });
-                }
-            });
-        }
+        if(data.value?.moneyBalanceRUB) balance = data.value.moneyBalanceRUB;
 
-        return result.length > 0 ? result : null;
+        return balance >= 0;
     });
 }
 
-module.exports = getUserOrders;
+module.exports = getUserBalance;

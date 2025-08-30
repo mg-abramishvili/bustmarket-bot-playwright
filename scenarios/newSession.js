@@ -10,6 +10,7 @@ const enterSms = require("../steps/enterSms");
 const getRandomName = require('../utils/names');
 const changeProfileNameRequest = require('../requests/changeProfileNameRequest');
 const changeProfileGenderRequest = require('../requests/changeProfileGenderRequest');
+const getUserBalance = require("../requests/getUserBalance");
 
 async function newSession(page, sessionId) {
     const log = createLogger(null);
@@ -88,6 +89,13 @@ async function newSession(page, sessionId) {
 
     // Пауза
     await page.waitForTimeout(10000);
+
+    await log('Проверка на отсутсвие долгов');
+    const isBalanceOk = await getUserBalance(page);
+    if(!isBalanceOk) {
+        await log('Аккаунт должник');
+        return await cancel();
+    }
 
     await log('Изменение имени аккаунта')
     const person = await getRandomName();

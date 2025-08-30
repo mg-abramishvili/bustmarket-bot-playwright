@@ -10,6 +10,7 @@ const makePayment = require("../steps/makePayment");
 const confirmOrder = require("../steps/confirmOrder");
 const goToCart = require("../steps/goToCart");
 const getCurrentPaymentMethod = require("../steps/getCurrentPaymentMethod");
+const getUserBalance = require("../requests/getUserBalance");
 
 async function createOrder(
     page,
@@ -39,6 +40,13 @@ async function createOrder(
     await log('Заказ - Проверка на авторизацию');
     const isLoggedIn = await checkForAuth(page);
     if (!isLoggedIn) return await cancelOrder();
+
+    await log('Проверка на отсутствие долгов');
+    const isBalanceOk = await getUserBalance(page);
+    if(!isBalanceOk) {
+        await log('Аккаунт должник');
+        return await cancelOrder();
+    }
 
     await log('Заказ - Удаление старых способов оплаты из профиля');
     const isOldPaymentMethodsDeleted = await deletePaymentMethods(page);
