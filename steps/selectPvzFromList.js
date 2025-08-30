@@ -1,8 +1,10 @@
 async function selectPvzFromList(page, pvzAddress, address, mode) {
     await page.waitForTimeout(2000);
 
-    if (!address.street) return false;
-    if (!address.home) return false;
+    if (mode === 'dbs') {
+        if (!address.street) return false;
+        if (!address.home) return false;
+    }
 
     try {
         // Ждем открытия попапа
@@ -15,7 +17,9 @@ async function selectPvzFromList(page, pvzAddress, address, mode) {
         // Нажатие таба Пункт выдачи если pvz или Курьером если dbs
         if (mode === 'dbs') {
             tabButton = page.locator(`text=курьером`).first();
-        } else {
+        }
+
+        if (mode === 'pvz'){
             tabButton = page.locator(`text=пункт выдачи`).first();
         }
 
@@ -42,7 +46,9 @@ async function selectPvzFromList(page, pvzAddress, address, mode) {
                     break;
                 }
             }
-        } else {
+        }
+
+        if (mode === 'pvz') {
             // Поиск по pvzAddress
             addressItemButton = popup.locator(`text=${pvzAddress}`).first();
         }
