@@ -20,13 +20,9 @@ async function getUserBalance(page,) {
 
         console.log("Ответ:", data);
 
-        let balance = -1;
+        const balance = data.value?.moneyBalanceRUB ?? -1;
 
-        if (data.value && typeof data.value.moneyBalanceRUB === "number") {
-            balance = data.value.moneyBalanceRUB;
-        }
-
-        return balance >= 0 ? balance : -1;
+        return balance >= 0;
     });
 }
 
